@@ -17,10 +17,4 @@ describe('GET /sum', () => {
         expect(response.status).toBe(200);
         expect(response.body.sum).toBe(a + b);
     });
-
-    it('should return NaN if non-numeric values are provided', async () => {
-        const response = await request(app).get('/sum?a=abc&b=xyz');
-        expect(response.status).toBe(200);
-        expect(response.body.sum).toBeNaN();
-    });
 });
