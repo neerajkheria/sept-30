@@ -1,23 +1,26 @@
-const express = require('express')
-const app = express()
+const request = require('supertest');
+const app = require('../app');
 
-app.get('/',(req,res) => {
-	res.status(200).json({'message': 'Hello, GitHub Actions!'});
+describe('GET /', () => {
+    it('should respond with a message', async () => {
+        const response = await request(app).get('/');
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('Hello, GitHub Actions!');
+    });
 });
 
-app.get('/sum',(req,res) => {
-	const a = parseInt(req.query.a);
-	const b = parseInt(req.query.b);
-	const sum = a + b;
-	res.status(200).json({sum});
+describe('GET /sum', () => {
+    it('should return the sum of two numbers', async () => {
+        const a = 5;
+        const b = 3;
+        const response = await request(app).get(`/sum?a=${a}&b=${b}`);
+        expect(response.status).toBe(200);
+        expect(response.body.sum).toBe(a + b);
+    });
+
+    it('should return NaN if non-numeric values are provided', async () => {
+        const response = await request(app).get('/sum?a=abc&b=xyz');
+        expect(response.status).toBe(200);
+        expect(response.body.sum).toBeNaN();
+    });
 });
-
-const PORT = process.env.PORT || 3000;
-
-if (process.env.NODE_ENV !== 'test') {
-	app.listen(PORT, () => {
-		console.log(`Server is running in port ${PORT}`);
-	});
-}
-
-module.exports = app;
